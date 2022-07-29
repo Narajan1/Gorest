@@ -49,7 +49,7 @@ module.exports = {
     postRequestRandomUsers() {
         return cy.request({
             method: "POST",
-            url: "/users/",
+            url: "/users",
             headers: {
                 Authorization: `Bearer ${token}`
             },
@@ -58,6 +58,22 @@ module.exports = {
                 email: this.generateRandomEmail(),
                 gender: this.generateRandomGender(),
                 status: this.getStatus()
+            }
+        })
+    },
+
+    putRequestByUpdetedFields(userId) {
+        return cy.request({
+            method: "PUT",
+            url: "/users/" + userId,
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
+            body: {
+                "name": "Updated_name111" + Date.now(),
+                "email": "Updated_email" + Date.now() + "@gmail.com",
+                "gender": this.generateRandomGender(),
+                "status": this.getStatus()
             }
         })
     },

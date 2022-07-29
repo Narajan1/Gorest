@@ -15,7 +15,7 @@ The project is written using v16.14.2 version of Node.js and version 10.3.0 of C
 - Clone the project from
 
 ```bash
-  git clone https://github.com/Narajan1/Booking_Cypress
+  https://github.com/Narajan1/Gorest
 ```
 
 - Go to the project directory

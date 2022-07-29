@@ -3,7 +3,7 @@ const helper = require("../support/helper");
 
 describe("Gorest", () => {
 
-    it("Get all users", () => {
+    it("GET - Get all users", () => {
         let count;
         helper.getPagesCount();
         cy.get("@pagesCount").then(responce => {
@@ -15,7 +15,7 @@ describe("Gorest", () => {
     })
 
     //Response Code 200
-    it("Get user by randome Id", () => {
+    it("GET - Get user by randome Id", () => {
         helper.getRandomId();
         cy.get("@userId").then(responce => {
             let userId = responce;
@@ -24,7 +24,7 @@ describe("Gorest", () => {
     })
 
     //Response Code 201
-    it("Create a user", () => {
+    it("POST - Create a user", () => {
         helper.postRequestRandomUsers().then(response => {
             expect(response.body.code).to.be.equal(201)
         }).then(responce => {
@@ -33,6 +33,19 @@ describe("Gorest", () => {
                 expect(responce.body.data).has.property("id", userId);
             })
 
+        })
+    })
+
+ 
+    it.only("PUT - Update user information", () => {
+        helper.postRequestRandomUsers().then(responce => {
+            expect(responce.body.code).to.be.equal(201)
+        }).then(response => {
+            let userId = response.body.data.id;
+            helper.putRequestByUpdetedFields(userId).then(response => {
+                expect(response.body.code).to.be.equal(200);
+                expect(response.body.data).has.property("id", userId);
+            })
         })
     })
 })
