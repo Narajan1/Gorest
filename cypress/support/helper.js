@@ -1,6 +1,4 @@
-const faker = require("@faker-js/faker").faker;
-
-let token = Cypress.env("TOKEN");
+const data = require("../support/data");
 
 module.exports = {
 
@@ -9,7 +7,7 @@ module.exports = {
             method: "GET",
             url: '/users',
             headers: {
-                Authorization: `Bearer ${token}`
+                Authorization: data.token
             }
         })
     },
@@ -19,7 +17,7 @@ module.exports = {
             method: "GET",
             url: `/users?page=${index}`,
             headers: {
-                Authorization: `Bearer ${token}`
+                Authorization: data.token
             }
         })
     },
@@ -28,9 +26,7 @@ module.exports = {
         let randomId;
         this.getAllUsers().then(responce => {
             let numberOfUsersInPage = responce.body.data.length;
-            cy.log(numberOfUsersInPage);
             let randomIndex = Math.floor(Math.random() * numberOfUsersInPage);
-            cy.log(randomIndex);
             randomId = responce.body.data[randomIndex].id;
             cy.wrap(randomId).as("userId");
         })
@@ -41,7 +37,7 @@ module.exports = {
             method: "GET",
             url: "/users/" + userId,
             headers: {
-                Authorization: `Bearer ${token}`
+                Authorization: data.token
             }
         })
     },
@@ -51,13 +47,13 @@ module.exports = {
             method: "POST",
             url: "/users",
             headers: {
-                Authorization: `Bearer ${token}`
+                Authorization: data.token
             },
             body: {
-                name: this.generateRandomName() + "Nara",
-                email: this.generateRandomEmail(),
-                gender: this.generateRandomGender(),
-                status: this.getStatus()
+                name: data.name,
+                email: data.email,
+                gender: data.gender,
+                status: data.status
             }
         })
     },
@@ -67,13 +63,23 @@ module.exports = {
             method: "PUT",
             url: "/users/" + userId,
             headers: {
-                Authorization: `Bearer ${token}`
+                Authorization: data.token
             },
             body: {
-                "name": "Updated_name111" + Date.now(),
-                "email": "Updated_email" + Date.now() + "@gmail.com",
-                "gender": this.generateRandomGender(),
-                "status": this.getStatus()
+                "name": data.updatedName,
+                "email": data.updatedEmail,
+                "gender": data.gender,
+                "status": data.status
+            }
+        })
+    },
+
+    deleteUser(userId) {
+        return cy.request({
+            method: "DELETE",
+            url: "/users/" + userId,
+            headers: {
+                Authorization: data.token
             }
         })
     },
@@ -85,18 +91,6 @@ module.exports = {
         } else {
             return "inactive";
         }
-    },
-
-    generateRandomName() {
-        return faker.name.firstName();
-    },
-
-    generateRandomEmail() {
-        return this.generateRandomName() + Date.now() + "@gmail.com";
-    },
-
-    generateRandomGender() {
-        return faker.name.gender(true);
     },
 
     getPagesCount() {
