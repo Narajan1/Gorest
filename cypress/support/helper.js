@@ -1,13 +1,23 @@
 const data = require("../support/data");
+const queries = require("../support/queries");
 
 module.exports = {
 
-    getAllUsers() {
+    getUsers() {
         return cy.request({
             method: "GET",
             url: '/users',
             headers: {
-                Authorization: data.token
+                Authorization: "Bearer " + data.token
+            }
+        })
+    },
+
+    getAllUsers() {
+        this.getPagesCount();
+        cy.get("@pagesCount").then(responce => {
+            for (let i = 1; i <= responce; i++) {
+                this.getAllUsersPerPage(i).its("body").should("not.be.empty");
             }
         })
     },
@@ -17,14 +27,14 @@ module.exports = {
             method: "GET",
             url: `/users?page=${index}`,
             headers: {
-                Authorization: data.token
+                Authorization: "Bearer " + data.token
             }
         })
     },
 
     getRandomId() {
         let randomId;
-        this.getAllUsers().then(responce => {
+        this.getUsers().then(responce => {
             let numberOfUsersInPage = responce.body.data.length;
             let randomIndex = Math.floor(Math.random() * numberOfUsersInPage);
             randomId = responce.body.data[randomIndex].id;
@@ -37,7 +47,7 @@ module.exports = {
             method: "GET",
             url: "/users/" + userId,
             headers: {
-                Authorization: data.token
+                Authorization: "Bearer " + data.token
             }
         })
     },
@@ -47,7 +57,7 @@ module.exports = {
             method: "POST",
             url: "/users",
             headers: {
-                Authorization: data.token
+                Authorization: "Bearer " + data.token
             },
             body: {
                 name: data.name,
@@ -63,7 +73,7 @@ module.exports = {
             method: "PUT",
             url: "/users/" + userId,
             headers: {
-                Authorization: data.token
+                Authorization: "Bearer " + data.token
             },
             body: {
                 "name": data.updatedName,
@@ -79,7 +89,7 @@ module.exports = {
             method: "DELETE",
             url: "/users/" + userId,
             headers: {
-                Authorization: data.token
+                Authorization: "Bearer " + data.token
             }
         })
     },
@@ -94,9 +104,17 @@ module.exports = {
     },
 
     getPagesCount() {
-        this.getAllUsers().then(responce => {
+        this.getUsers().then(responce => {
             let pages = responce.body.meta.pagination.pages;
             cy.wrap(pages).as("pagesCount");
+        })
+    },
+
+    getAddedUsersId() {
+        queries.selectAllUsersFromDB().then(result => {
+            let numberOfUsersInTable = result.length;
+            let randomIndex = Math.floor(Math.random() * numberOfUsersInTable)
+            cy.wrap(result[randomIndex].UserID).as("userIdFromTable")
         })
     }
 }
